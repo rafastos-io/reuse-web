@@ -13,9 +13,15 @@ export async function GET(req) {
   const size = (searchParams.get("size") || "").trim();
   const condition = (searchParams.get("condition") || "").trim();
   const city = (searchParams.get("city") || "").trim();
+  const statusParam = (searchParams.get("status") || "").trim().toUpperCase();
+  const statusFilter =
+    statusParam === "ALL" || statusParam === ""
+      ? { status: "ACTIVE" }           // comportamento padrao preservado
+      : { status: statusParam };        // ACTIVE, PAUSED, TRADED, DELETED
+
 
   const where = {
-    status: "ACTIVE",
+    statusFilter,
     AND: [
       q
         ? {
