@@ -1,13 +1,12 @@
-// src/app/api/items/route.js
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
+ 
 import { prisma } from "@/lib/prisma";
 import { getUserIdFromRequest } from "@/lib/getUserFromRequest";
-
+ 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
-
+ 
   const q = (searchParams.get("q") || "").trim();
   const category = (searchParams.get("category") || "").trim();
   const size = (searchParams.get("size") || "").trim();
@@ -18,10 +17,10 @@ export async function GET(req) {
     statusParam === "ALL" || statusParam === ""
       ? { status: "ACTIVE" }           // comportamento padrao preservado
       : { status: statusParam };        // ACTIVE, PAUSED, TRADED, DELETED
-
-
+ 
+ 
   const where = {
-    statusFilter,
+    ...statusFilter,
     AND: [
       q
         ? {
@@ -37,7 +36,7 @@ export async function GET(req) {
       city ? { city: { equals: city, mode: "insensitive" } } : {},
     ],
   };
-
+ 
   const items = await prisma.item.findMany({
     where,
     include: {
@@ -56,25 +55,25 @@ export async function GET(req) {
     orderBy: { createdAt: "desc" },
     take: 40,
   });
-
+ 
   return Response.json(items);
 }
-
+ 
 export async function POST(req) {
   // ✅ auth pelo cookie (não aceitar ownerId do client)
   const userId = await getUserIdFromRequest(req);
   if (!userId) {
     return new Response("Não autenticado", { status: 401 });
   }
-
+ 
   const body = await req.json();
-
+ 
   const { title, description, category, size, condition, city, state, imageUrls } = body;
-
+ 
   if (!title?.trim()) {
     return new Response("title é obrigatório", { status: 400 });
   }
-
+ 
   const item = await prisma.item.create({
     data: {
       ownerId: userId,
@@ -97,6 +96,6 @@ export async function POST(req) {
     },
     include: { images: { orderBy: { order: "asc" } } },
   });
-
+ 
   return Response.json(item, { status: 201 });
 }
