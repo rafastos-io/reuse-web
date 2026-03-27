@@ -269,3 +269,5 @@ No endpoint de debug, garantir `await`:
 Rafael Araújo Santos
 Patrícia Sayuri Eihara
 Natalia Silva Guaita
+
+28.03
