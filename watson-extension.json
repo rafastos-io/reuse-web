@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://reuse-web-tau.vercel.app",
+      "url": "https://reuse-web.vercel.app",
       "description": "Producao"
     }
   ],
